@@ -1,6 +1,15 @@
-import React from "react";
+import React ,{useEffect}from "react";
+import { useSelector } from "react-redux";
 
 export default function CatSprite() {
+  // const current = useSelector(
+  //   (state) => state.rootReducer.spriteReducer.currentSprite
+  // );
+  // const currSprite = useSelector(
+  //   (state) => state.rootReducer.spriteReducer.sprites
+  // );
+  // useEffect(() => {
+  // }, [currSprite[current].xPos, currSprite[current].yPos]);
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
