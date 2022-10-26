@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { removeCompleteEle } from "../utils/ActionMap";
 
 const initialState = {};
 
@@ -15,9 +16,25 @@ const multiAction = createSlice({
         action.payload.value,
       ];
     },
+    removeEle: (state, action) => {
+      if (removeCompleteEle.includes(action.payload))
+        delete state[action.payload];
+      else {
+        let ele = [];
+        removeCompleteEle.map((item) => {
+          if (state.hasOwnProperty(item)) ele.push(item);
+        });
+        ele.map((item) => {
+          state[item] = state[item].filter(function (i) {
+            return i !== action.payload;
+          });
+        });
+      }
+    },
   },
 });
 
-export const { addEvent, appendRecursiveEvent } = multiAction.actions;
+export const { addEvent, appendRecursiveEvent, removeEle } =
+  multiAction.actions;
 
 export default multiAction.reducer;

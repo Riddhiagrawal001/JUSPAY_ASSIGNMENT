@@ -51,37 +51,30 @@ export default function PreviewArea() {
       }
     }
   };
-  const handleDragStop = (event) => {
-    let val = document.getElementById("cat-wrapper").getBoundingClientRect();
-  };
-  const handleDragStart = () => {
-    let val = document.getElementById("cat-wrapper").getBoundingClientRect();
 
-    setInitial({ x: val.right, y: val.bottom });
-  };
+  var str = `rotate(${
+    currSprite[current]?.deg ? currSprite[current].deg : 0
+  }deg)`;
   return (
-    <Draggable
-      onStop={(event) => handleDragStop(event)}
-      onStart={(event) => handleDragStart(event)}
+    <div
+      id="preview-area"
+      ref={myRef}
+      style={{
+        position: "absolute",
+        height: "100%",
+        width: "100%",
+        left: currSprite && currSprite[current] ? currSprite[current].xPos : x,
+        top: currSprite && currSprite[current] ? currSprite[current].yPos : y,
+        transform: str,
+        transformOrigin: "center",
+      }}
+      onClick={handleSpriteClick}
     >
-      <div
-        className="flex-none"
-        id="cat-wrapper"
-        ref={myRef}
-        style={{
-          position: "absolute",
-          left:
-            currSprite && currSprite[current] ? currSprite[current].xPos : x,
-          top: currSprite && currSprite[current] ? currSprite[current].yPos : y,
-          transform: `rotate(${
-            currSprite && currSprite[current] ? currSprite[current].deg : 0
-          }deg)`,
-          transformOrigin: "58.5px 60.5px",
-        }}
-        onClick={handleSpriteClick}
-      >
-        <CatSprite />
-      </div>
-    </Draggable>
+      <Draggable>
+        <div style={{ height: "100%", width: "100%" }}>
+          <CatSprite />
+        </div>
+      </Draggable>
+    </div>
   );
 }

@@ -4,12 +4,10 @@ import MidArea from "./components/MidArea";
 import PreviewArea from "./components/PreviewArea";
 import Icon from "./components/Icon";
 import { Button } from "@mui/material";
-import { getCursorPos } from "./reducers/motionReducer";
 import { useDispatch, useSelector } from "react-redux";
 import { allowDrop } from "./utils/dropElementutil";
-import { getControl1Action, getControl2Action } from "./utils/controlAction";
+
 export default function App() {
-  const dispatch = useDispatch();
   const multiActionReducer = useSelector(
     (state) => state.rootReducer.multiActionReducer
   );
