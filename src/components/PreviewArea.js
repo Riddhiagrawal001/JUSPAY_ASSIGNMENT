@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import CatSprite from "./CatSprite";
 import { useDispatch, useSelector } from "react-redux";
 import { addSprites, setCurrentSprite } from "../reducers/spriteReducer";
+import Draggable from "react-draggable";
 
 export default function PreviewArea() {
   const dispatch = useDispatch();
@@ -18,7 +19,7 @@ export default function PreviewArea() {
   const myRef = useRef();
   const [x, setX] = useState();
   const [y, setY] = useState();
-
+  const [initial, setInitial] = useState();
   const getPosition = () => {
     const x = myRef.current.offsetLeft;
     setX(x);
@@ -29,6 +30,7 @@ export default function PreviewArea() {
 
   useEffect(() => {
     getPosition();
+    dispatch(addSprites({ id: "sprite-1", val: { xPos: 0, yPos: 0 } }));
     dispatch(setCurrentSprite("sprite-1"));
   }, []);
   useEffect(() => {
@@ -49,23 +51,37 @@ export default function PreviewArea() {
       }
     }
   };
+  const handleDragStop = (event) => {
+    let val = document.getElementById("cat-wrapper").getBoundingClientRect();
+  };
+  const handleDragStart = () => {
+    let val = document.getElementById("cat-wrapper").getBoundingClientRect();
 
+    setInitial({ x: val.right, y: val.bottom });
+  };
   return (
-    <div
-      className="flex-none h-full overflow-y-auto p-2"
-      ref={myRef}
-      style={{
-        position: "absolute",
-        left: currSprite && currSprite[current] ? currSprite[current].xPos : x,
-        top: currSprite && currSprite[current] ? currSprite[current].yPos : y,
-        transform: `rotate(${
-          currSprite && currSprite[current] ? currSprite[current].deg : 0
-        }deg)`,
-        transformOrigin: "58.5px 60.5px",
-      }}
-      onClick={handleSpriteClick}
+    <Draggable
+      onStop={(event) => handleDragStop(event)}
+      onStart={(event) => handleDragStart(event)}
     >
-      <CatSprite />
-    </div>
+      <div
+        className="flex-none"
+        id="cat-wrapper"
+        ref={myRef}
+        style={{
+          position: "absolute",
+          left:
+            currSprite && currSprite[current] ? currSprite[current].xPos : x,
+          top: currSprite && currSprite[current] ? currSprite[current].yPos : y,
+          transform: `rotate(${
+            currSprite && currSprite[current] ? currSprite[current].deg : 0
+          }deg)`,
+          transformOrigin: "58.5px 60.5px",
+        }}
+        onClick={handleSpriteClick}
+      >
+        <CatSprite />
+      </div>
+    </Draggable>
   );
 }

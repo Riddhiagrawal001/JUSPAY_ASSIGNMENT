@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Icon from "./Icon";
 import { addSprites } from "../reducers/spriteReducer";
@@ -10,10 +10,15 @@ import {
   goToYPos,
 } from "../reducers/motionReducer";
 import { addEvent, appendRecursiveEvent } from "../reducers/multiActionReducer";
-import { getStepLabelUtilityClass, TextField } from "@mui/material";
+import { TextField, Snackbar } from "@mui/material";
 import Draggable from "react-draggable";
 import * as ReactDOM from "react-dom";
 import { useLongPress, LongPressDetectEvents } from "use-long-press";
+import { looks, control } from "../utils/ActionMap";
+import { dragStartUtil } from "../utils/dragStartUtil";
+import { allowDrop } from "../utils/dropElementutil";
+import { addEventInStack } from "../utils/commonUtils";
+import { getControl1Action, getControl2Action } from "../utils/controlAction";
 
 export default function Sidebar() {
   const current = useSelector(
@@ -37,8 +42,9 @@ export default function Sidebar() {
     y: 0,
   });
   const [deg, setDeg] = useState(0);
+  const [ids, setIds] = useState([]);
+  const [open, setOpen] = useState(false);
   const setDefault = (id, flag = false) => {
-    console.log("Default", id);
     if (
       (id === "turn-clock-1" && deg !== 0) ||
       (id === "turn-clock-1" && !flag)
@@ -80,28 +86,30 @@ export default function Sidebar() {
       );
     }
   };
-
+  // const dragStart = (id, initiated = false) => {
+  //   if (id != "flag" && id != "cat") {
+  //     let name = document.getElementById(id).parentNode.id;
+  //     if (multiActionReducer.hasOwnProperty("flag"))
+  //       dispatch(
+  //         appendRecursiveEvent({ key: "flag", value: initiated ? id : name })
+  //       );
+  //     else if (multiActionReducer.hasOwnProperty("cat")) {
+  //       dispatch(
+  //         appendRecursiveEvent({ key: "cat", value: initiated ? id : name })
+  //       );
+  //     }
+  //   }
+  // };
   const onDragStop = (event, id) => {
-    if (id != "flag" && id != "cat") {
-      let name = document.getElementById(id).parentNode.id;
-      if (multiActionReducer.hasOwnProperty("flag"))
-        dispatch(appendRecursiveEvent({ key: "flag", value: name }));
-      else if (multiActionReducer.hasOwnProperty("cat")) {
-        dispatch(appendRecursiveEvent({ key: "cat", value: name }));
-      }
-    }
+    addEventInStack(id);
     setDefault(id);
-    console.log("id", id);
   };
-  const onStart = (id) => {
-    console.log("start", id);
-  };
+  const onStart = (id) => {};
   const dragHandlers = {
     onStart: (id) => onStart(id),
     onStop: (event) => onStop(event),
   };
   useEffect(() => {
-    console.log("use3feect", currSprite, current);
     setPos({
       x:
         currSprite[current] && currSprite[current].xPos
@@ -147,8 +155,7 @@ export default function Sidebar() {
       />
     </>
   );
-  const val1 = true;
-  const val2 = true;
+
   const moveSteps = (
     <>
       <div
@@ -202,7 +209,6 @@ export default function Sidebar() {
   );
   const turnClock = (
     <>
-      {console.log("inside turn clockwise")}
       <div
         id="turn-clock"
         className="flex flex-row flex-wrap bg-blue-500 text-white px-2 py-1 my-2 text-sm cursor-pointer"
@@ -274,9 +280,14 @@ export default function Sidebar() {
       />
     </>
   );
-
+  const handleClose = () => {
+    setOpen(false);
+  };
   return (
-    <div className="w-60 flex-none h-full overflow-y-auto flex flex-col items-start p-2 border-r border-gray-200">
+    <div
+      className="w-60 flex-none h-full overflow-y-auto flex flex-col items-start p-2 border-r border-gray-200"
+      onDragOver={allowDrop}
+    >
       <div className="font-bold"> {"Events"} </div>
       <div
         onClick={(event) => {
@@ -300,7 +311,7 @@ export default function Sidebar() {
         id="parent-steps"
         onClick={(event) => {
           setPos({ ...pos, x: Number(pos.x) + Number(moveText) });
-          console.log("clicked", pos);
+
           dispatch(
             addSprites({
               id: current,
@@ -317,7 +328,6 @@ export default function Sidebar() {
       <div
         id="parent-turn-clock"
         onClick={() => {
-          console.log("tur anti", pos);
           setDeg(
             Number(deg) + Number(clockTurnText) === 360
               ? 0
@@ -392,6 +402,53 @@ export default function Sidebar() {
           }}
         />
       </div>
+      <div className="font-bold"> {"Looks"} </div>
+      {looks &&
+        looks.map((value, idx) => {
+          return (
+            <div
+              draggable
+              className="flex flex-row flex-wrap bg-purple-500 text-white px-2 py-1 my-2 text-sm cursor-pointer"
+              id={`looks-${idx}`}
+              onDragStart={dragStartUtil}
+              onDragOver={allowDrop}
+              onClick={() => {
+                alert(value);
+                setOpen(true);
+              }}
+            >
+              {value}
+            </div>
+          );
+        })}
+
+      <div className="font-bold"> {"Control"} </div>
+
+      {control &&
+        control.map((value, idx) => {
+          return (
+            <div
+              draggable
+              onDragStart={dragStartUtil}
+              onDragOver={allowDrop}
+              className="flex flex-row flex-wrap bg-red-500 text-white px-2 py-1 my-2 text-sm cursor-pointer"
+              id={`control-${idx}`}
+              onClick={() => {
+                setOpen(true);
+                `control-${idx}` === "control-0"
+                  ? getControl1Action()
+                  : getControl2Action();
+              }}
+            >
+              {value}
+            </div>
+          );
+        })}
+      {ids && ids.length > 0
+        ? ids.map((value, index) => {
+            if (value.includes("looks")) return alert(value);
+          })
+        : null}
     </div>
   );
 }

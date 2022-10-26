@@ -6,36 +6,40 @@ import Icon from "./components/Icon";
 import { Button } from "@mui/material";
 import { getCursorPos } from "./reducers/motionReducer";
 import { useDispatch, useSelector } from "react-redux";
+import { allowDrop } from "./utils/dropElementutil";
+import { getControl1Action, getControl2Action } from "./utils/controlAction";
 export default function App() {
   const dispatch = useDispatch();
   const multiActionReducer = useSelector(
     (state) => state.rootReducer.multiActionReducer
   );
   const handleFlagClick = () => {
+    let executionFlag = false;
     if (multiActionReducer.hasOwnProperty("flag")) {
       const len = multiActionReducer.flag.length;
       if (len > 0) {
         for (let i = 0; i < len; i++) {
           let eventId = multiActionReducer.flag[i];
-          const element = document.getElementById(eventId);
-          console.log("element", element);
-          element.click();
+          executionFlag = true;
+
+          if (executionFlag) {
+            const element = document.getElementById(eventId);
+            element.click();
+            if (eventId.includes("control")) break;
+          }
+          executionFlag = false;
         }
       }
     }
   };
 
   return (
-    <div
-      className="bg-blue-100 pt-6 font-sans"
-      // onMouseMove={() =>
-      //   dispatch(
-      //     getCursorPos({ x: window.event.clientX, y: window.event.clientY })
-      //   )
-      // }
-    >
+    <div className="bg-blue-100 pt-6 font-sans" onDragOver={allowDrop}>
       <div className="h-screen overflow-hidden flex flex-row  ">
-        <div className="flex-1 h-screen overflow-hidden flex flex-row bg-white border-t border-r border-gray-200 rounded-tr-xl mr-2">
+        <div
+          className="flex-1 h-screen overflow-hidden flex flex-row bg-white border-t border-r border-gray-200 rounded-tr-xl mr-2"
+          onDragOver={allowDrop}
+        >
           <Sidebar /> <MidArea />
         </div>
         <div className="w-1/3 h-screen overflow-hidden ">
