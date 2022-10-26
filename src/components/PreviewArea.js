@@ -66,7 +66,7 @@ export default function PreviewArea() {
         left: currSprite && currSprite[current] ? currSprite[current].xPos : x,
         top: currSprite && currSprite[current] ? currSprite[current].yPos : y,
         transform: str,
-        transformOrigin: "center",
+        transformOrigin: "58.5px 60.5px",
       }}
       onClick={handleSpriteClick}
     >
