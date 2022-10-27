@@ -251,13 +251,19 @@ export default function Sidebar() {
         onDragStart={dragStartUtil}
         onDragOver={allowDrop}
         onClick={() => {
+          setDeg(
+            Number(deg) - Number(antiTurnText) === -360
+              ? 0
+              : Number(deg) - Number(antiTurnText)
+          );
           dispatch(
             addSprites({
               id: current,
               val: {
-                xPos: pos.x,
-                yPos: pos.y,
-                deg: Number(currSprite[current].deg) - Number(clockTurnText),
+                deg:
+                  Number(deg) - Number(antiTurnText) === -360
+                    ? 0
+                    : Number(deg) - Number(antiTurnText),
               },
             })
           );
@@ -341,6 +347,27 @@ export default function Sidebar() {
       />
     </div>
   );
+  const handleSnackbar = (id) => {
+    if (id === "control-0")
+      enqueueSnackbar("Waiting for 1 sec started", { autoHideDuration: 4000 });
+    else {
+      if (id === "started")
+        enqueueSnackbar("Repeating for 2 times started", {
+          autoHideDuration: 4000,
+        });
+      else if (id === "error")
+        enqueueSnackbar(
+          "Sorry Nothing to repeat !!! Please add Motion or Looks.",
+          {
+            autoHideDuration: 4000,
+          }
+        );
+      else
+        enqueueSnackbar("Repeating for 2 times ended", {
+          autoHideDuration: 4000,
+        });
+    }
+  };
 
   return (
     <div
@@ -375,7 +402,12 @@ export default function Sidebar() {
               onDragStart={dragStartUtil}
               onDragOver={allowDrop}
               onClick={() => {
-                enqueueSnackbar(value, { autoHideDuration: 2000 });
+                enqueueSnackbar(
+                  value === "say Hello"
+                    ? "Hello , How are you doing?"
+                    : "Hmm...Thinking...",
+                  { autoHideDuration: 2000 }
+                );
                 setOpen(true);
               }}
             >
@@ -397,8 +429,8 @@ export default function Sidebar() {
               onClick={() => {
                 setOpen(true);
                 `control-${idx}` === "control-0"
-                  ? getControl1Action()
-                  : getControl2Action();
+                  ? getControl1Action(`control-${idx}`, handleSnackbar)
+                  : getControl2Action(handleSnackbar);
               }}
             >
               {value}

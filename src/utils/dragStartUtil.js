@@ -5,7 +5,8 @@ import { addEvent } from "../reducers/multiActionReducer";
 export function dragStartUtil(event) {
   event.dataTransfer.setData("itemDragged", event.target.id);
   event.dataTransfer.setData("draggedItemId", `dragged-${event.target.id}`);
-  store.dispatch(addElement(event.target.id));
+  if (!event.target.id.includes("dragged"))
+    store.dispatch(addElement(event.target.id));
   if (event.target.id === "flag") {
     store.dispatch(addEvent("flag"));
   }

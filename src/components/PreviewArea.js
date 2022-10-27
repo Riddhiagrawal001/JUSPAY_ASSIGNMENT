@@ -3,6 +3,7 @@ import CatSprite from "./CatSprite";
 import { useDispatch, useSelector } from "react-redux";
 import { addSprites, setCurrentSprite } from "../reducers/spriteReducer";
 import Draggable from "react-draggable";
+import { handleSpriteClick } from "../utils/commonUtils";
 
 export default function PreviewArea() {
   const dispatch = useDispatch();
@@ -12,10 +13,6 @@ export default function PreviewArea() {
   const currSprite = useSelector(
     (state) => state.rootReducer.spriteReducer.sprites
   );
-  const multiActionReducer = useSelector(
-    (state) => state.rootReducer.multiActionReducer
-  );
-
   const myRef = useRef();
   const [x, setX] = useState();
   const [y, setY] = useState();
@@ -36,21 +33,6 @@ export default function PreviewArea() {
   useEffect(() => {
     dispatch(addSprites({ id: "sprite-1", val: { xPos: x, yPos: y } }));
   }, [x, y]);
-
-  const handleSpriteClick = () => {
-    if (multiActionReducer.hasOwnProperty("cat")) {
-      const len = multiActionReducer.cat.length;
-      if (len > 0) {
-        for (let i = 0; i < len; i++) {
-          let eventId = multiActionReducer.cat[i];
-
-          const element = document.getElementById(eventId);
-
-          element.click();
-        }
-      }
-    }
-  };
 
   var str = `rotate(${
     currSprite[current]?.deg ? currSprite[current].deg : 0

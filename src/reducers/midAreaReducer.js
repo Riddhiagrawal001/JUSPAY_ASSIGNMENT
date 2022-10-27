@@ -15,9 +15,15 @@ const midAreaReducer = createSlice({
     setCurrentEleExecuting: (state, action) => {
       state.currentEleExecuting = action.payload;
     },
+    removeElementMidArea: (state, action) => {
+      state.ele = state.ele.filter(function (i) {
+        return i !== action.payload;
+      });
+    },
   },
 });
 
-export const { addElement, setCurrentEleExecuting } = midAreaReducer.actions;
+export const { addElement, setCurrentEleExecuting, removeElementMidArea } =
+  midAreaReducer.actions;
 
 export default midAreaReducer.reducer;
